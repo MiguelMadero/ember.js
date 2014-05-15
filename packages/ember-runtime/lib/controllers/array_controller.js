@@ -182,7 +182,7 @@ Ember.ArrayController = Ember.ArrayProxy.extend(Ember.ControllerMixin,
   init: function() {
     this._super();
 
-    this.set('_subControllers', Ember.A());
+    this.set('_subControllers', [ ]);
   },
 
   content: Ember.computed(function () {
@@ -231,12 +231,22 @@ Ember.ArrayController = Ember.ArrayProxy.extend(Ember.ControllerMixin,
 
   _resetSubControllers: function() {
     var subControllers = get(this, '_subControllers');
-    if (subControllers) {
-      forEach(subControllers, function(subController) {
-        if (subController) { subController.destroy(); }
-      });
-    }
+    var controller;
 
-    this.set('_subControllers', Ember.A());
+    if (subControllers.length) {
+      for (var i = 0, length = subControllers.length; length > i; i++) {
+        controller = subControllers[i];
+        if (controller) {
+          controller.destroy();
+        }
+      }
+
+      subControllers.length = 0;
+    }
+  },
+
+  willDestroy: function() {
+    this._resetSubControllers();
+    this._super();
   }
 });
